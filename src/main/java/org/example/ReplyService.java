@@ -1,17 +1,29 @@
 package org.example;
 
+import org.example.filter.LowercaseTransform;
+import org.example.filter.Transform;
+import org.example.filter.TransformerDecorator;
+import org.example.filter.TrimTransform;
+import org.example.reply.*;
+
+import java.util.List;
+import java.util.logging.Filter;
+
 /**
  * Students implement this method to return the exact outputs defined in README.
  */
 public class ReplyService {
 
     public String reply(String message, ReplyType type) {
-        // TODO: Implement mapping according to README canonical expectations.
-        // Requirements:
-        // - null or blank -> "Please say something."
-        // - For known messages, return exact string for each ReplyType.
-        // - For unknown messages, return the 'any other text' mapping.
-        return "Please say something.";
-//        throw new UnsupportedOperationException("Not implemented yet");
+        if(message==null|| message.trim().isEmpty()){
+            return "Please say something.";
+        }
+        TransformerDecorator transformerDecorator =
+                new TransformerDecorator(List.of(new TrimTransform(), new LowercaseTransform()));
+
+        String transformedMessage = transformerDecorator.runTransformers(message); // we can make it better
+//        ReplyTypeService replyTypeService = ReplyTypeServiceFactory.getReplyTypeServiceByType(type);
+//        return replyTypeService.getReply(filteredMessage);
+        return ReplyTypeServiceFactory.getReplyTypeServiceByType(type).getReply(transformedMessage);
     }
 }
